@@ -10,6 +10,10 @@ package options
 type ListCollectionsOptions struct {
 	// If true, each collection document will only contain a field for the collection name. The default value is false.
 	NameOnly *bool
+
+	// When both authorizedCollections and nameOnly options are set to true, the command returns
+	// only those collections for which the user has privileges.
+	AuthorizedCollections *bool
 }
 
 // ListCollections creates a new ListCollectionsOptions instance.
@@ -23,6 +27,12 @@ func (lc *ListCollectionsOptions) SetNameOnly(b bool) *ListCollectionsOptions {
 	return lc
 }
 
+// SetAuthorizedCollections sets the value for the AuthorizedCollections field.
+func (lc *ListCollectionsOptions) SetAuthorizedCollections(b bool) *ListCollectionsOptions {
+	lc.AuthorizedCollections = &b
+	return lc
+}
+
 // MergeListCollectionsOptions combines the given ListCollectionsOptions instances into a single *ListCollectionsOptions
 // in a last-one-wins fashion.
 func MergeListCollectionsOptions(opts ...*ListCollectionsOptions) *ListCollectionsOptions {
@@ -33,6 +43,9 @@ func MergeListCollectionsOptions(opts ...*ListCollectionsOptions) *ListCollectio
 		}
 		if opt.NameOnly != nil {
 			lc.NameOnly = opt.NameOnly
+		}
+		if opt.AuthorizedCollections != nil {
+			lc.AuthorizedCollections = opt.AuthorizedCollections
 		}
 	}
 

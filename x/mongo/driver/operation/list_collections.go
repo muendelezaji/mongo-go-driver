@@ -24,6 +24,7 @@ import (
 type ListCollections struct {
 	filter         bsoncore.Document
 	nameOnly       *bool
+	authorizedColl *bool
 	session        *session.Client
 	clock          *session.ClusterClock
 	monitor        *event.CommandMonitor
@@ -95,6 +96,9 @@ func (lc *ListCollections) command(dst []byte, desc description.SelectedServer) 
 	if lc.nameOnly != nil {
 		dst = bsoncore.AppendBooleanElement(dst, "nameOnly", *lc.nameOnly)
 	}
+	if lc.authorizedColl != nil {
+		dst = bsoncore.AppendBooleanElement(dst, "authorizedCollections", *lc.authorizedColl)
+	}
 	return dst, nil
 }
 
@@ -115,6 +119,17 @@ func (lc *ListCollections) NameOnly(nameOnly bool) *ListCollections {
 	}
 
 	lc.nameOnly = &nameOnly
+	return lc
+}
+
+// AuthorizedCollections allows users without the listCollections permission on the database to list
+// only the specific collections to which they have access.
+func (lc *ListCollections) AuthorizedCollections(authorizedColl bool) *ListCollections {
+	if lc == nil {
+		lc = new(ListCollections)
+	}
+
+	lc.authorizedColl = &authorizedColl
 	return lc
 }
 

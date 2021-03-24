@@ -330,6 +330,10 @@ func (db *Database) ListCollections(ctx context.Context, filter interface{}, opt
 	if lco.NameOnly != nil {
 		op = op.NameOnly(*lco.NameOnly)
 	}
+	if lco.AuthorizedCollections != nil {
+		op = op.AuthorizedCollections(*lco.AuthorizedCollections)
+	}
+
 	retry := driver.RetryNone
 	if db.client.retryReads {
 		retry = driver.RetryOncePerCommand
